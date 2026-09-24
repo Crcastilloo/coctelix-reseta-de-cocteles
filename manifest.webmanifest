@@ -1,20 +1,10 @@
 {
-  "name": "Cóctelix — Recetas de cócteles",
-  "short_name": "Cóctelix",
-  "description": "Biblioteca móvil de recetas de cócteles.",
-  "lang": "es",
-  "start_url": "./",
-  "scope": "./",
-  "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#f6f6f3",
-  "theme_color": "#111111",
-  "icons": [
-    {
-      "src": "./icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    }
-  ]
+  "name":"Cóctelix — Recetas de cócteles",
+  "short_name":"Cóctelix",
+  "start_url":"./",
+  "scope":"./",
+  "display":"standalone",
+  "background_color":"#f4f1ea",
+  "theme_color":"#111111",
+  "icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
 }
