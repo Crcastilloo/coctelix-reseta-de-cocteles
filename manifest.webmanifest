@@ -7,5 +7,5 @@
   "background_color": "#050608",
   "theme_color": "#050608",
   "lang": "es",
-  "icons": [{"src":"logo-coctelix.png","sizes":"625x660","type":"image/png","purpose":"any"}]
+  "icons": [{"src":"logo-coctelix.png?v=3","sizes":"625x660","type":"image/png","purpose":"any"}]
 }
