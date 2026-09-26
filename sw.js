@@ -1,5 +1,5 @@
-const CACHE = 'coctelix-premium-v4';
-const SHELL = ['./','./index.html','./manifest.webmanifest','./logo-coctelix.png'];
+const CACHE = 'coctelix-premium-v5';
+const SHELL = ['./','./index.html','./manifest.webmanifest','./apple-touch-icon.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
 });
