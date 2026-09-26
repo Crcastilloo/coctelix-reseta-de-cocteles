@@ -1,5 +1,5 @@
 {
-  "name": "Cóctelix — 246 recetas",
+  "name": "Cóctelix",
   "short_name": "Cóctelix",
   "description": "Biblioteca de 246 recetas de cócteles con imágenes originales.",
   "start_url": ".",
@@ -7,5 +7,5 @@
   "background_color": "#050608",
   "theme_color": "#050608",
   "lang": "es",
-  "icons": [{"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+  "icons": [{"src":"logo-coctelix.png","sizes":"273x660","type":"image/png","purpose":"any"}]
 }
