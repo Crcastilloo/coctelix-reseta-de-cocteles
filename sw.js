@@ -1,4 +1,4 @@
-const CACHE = 'coctelix-premium-v3';
+const CACHE = 'coctelix-premium-v4';
 const SHELL = ['./','./index.html','./manifest.webmanifest','./logo-coctelix.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
