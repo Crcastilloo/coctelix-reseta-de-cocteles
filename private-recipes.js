@@ -17,6 +17,27 @@ const errText=e=>{
   return m;
 };
 function toast(t){if(typeof window.toast==="function")return window.toast(t);alert(t)}
+// ---- Favorites cloud sync: keep favorites in the user's Supabase account (user_metadata)
+// so they survive localStorage wipes and follow the user across browsers/devices.
+let favSyncT=null;
+function pageFavs(){try{return JSON.parse(localStorage.getItem("coctelix-favs")||"[]").map(Number).filter(n=>n>0)}catch(e){return[]}}
+async function pushFavsCloud(){try{const c=client();if(!c||!S.user)return;const{error}=await c.auth.updateUser({data:{favorites:pageFavs()}});if(error)throw error}catch(e){console.warn("Fav cloud sync failed:",e&&e.message||e)}}
+function schedulePushFavs(){clearTimeout(favSyncT);favSyncT=setTimeout(pushFavsCloud,1200)}
+function mergeCloudFavs(){
+ if(!S.user)return;
+ const umd=S.user.user_metadata||{};
+ const cloud=Array.isArray(umd.favorites)?umd.favorites.map(Number).filter(n=>n>0):[];
+ const local=pageFavs();
+ if(!cloud.length){if(local.length)schedulePushFavs();return}
+ const merged=[...new Set([...local,...cloud])];
+ const changed=merged.length!==local.length||cloud.some(id=>local.indexOf(id)<0);
+ if(changed){
+  try{localStorage.setItem("coctelix-favs",JSON.stringify(merged))}catch(e){}
+  try{if(typeof state!=="undefined"&&state&&state.favorites){state.favorites=new Set(merged);if(typeof render==="function")render()}}catch(e){}
+ }
+ schedulePushFavs();
+}
+window.CoctelixSyncFavs=schedulePushFavs;
 function style(){
  const x=document.createElement("style");x.id="privateStyles";x.textContent=`
 .accountBtn{display:inline-flex;align-items:center;justify-content:center;width:132px;height:132px;padding:0;border:1px solid rgba(241,200,91,.28);background:rgba(255,255,255,.04);color:var(--text);border-radius:50%;cursor:pointer;font-weight:700;flex:0 0 auto}.accountBtn b{font-size:34px;font-weight:400;line-height:1;transform:translateY(-2px)}.accountBtn span{display:none}.accountBtn:hover{border-color:rgba(241,200,91,.55)}.myRecipesBtn{display:none;align-items:center;justify-content:center;border:1px solid rgba(241,200,91,.28);background:rgba(255,255,255,.04);color:var(--text);border-radius:999px;padding:12px 17px;cursor:pointer;font-weight:700;white-space:nowrap}.myRecipesBtn.show{display:inline-flex}.myRecipesBtn:hover{border-color:rgba(241,200,91,.55)}.search{top:78px}
@@ -36,8 +57,8 @@ function client(){
  if(!sub){const r=sb.auth.onAuthStateChange((event,session)=>setTimeout(()=>authChanged(event,session),0));sub=r?.data?.subscription||null}
  return sb
 }
-async function authChanged(event,session){S.user=session?.user||null;S.ready=true;updateAccount();if(S.user)await load();else{S.recipes=[];S.urls.clear()}if(event==="SIGNED_OUT")document.querySelectorAll(".privateOverlay.show").forEach(close);if(event==="PASSWORD_RECOVERY")setTimeout(()=>resetForm(),0)}
-async function ensure(){const c=client();if(!c)throw Error("El servicio de cuenta todavía no está disponible.");if(!S.ready){const {data,error}=await c.auth.getSession();if(error)throw error;S.user=data.session?.user||null;S.ready=true;updateAccount();if(S.user)await load()}return S.user}
+async function authChanged(event,session){S.user=session?.user||null;S.ready=true;updateAccount();mergeCloudFavs();if(S.user)await load();else{S.recipes=[];S.urls.clear()}if(event==="SIGNED_OUT")document.querySelectorAll(".privateOverlay.show").forEach(close);if(event==="PASSWORD_RECOVERY")setTimeout(()=>resetForm(),0)}
+async function ensure(){const c=client();if(!c)throw Error("El servicio de cuenta todavía no está disponible.");if(!S.ready){const {data,error}=await c.auth.getSession();if(error)throw error;S.user=data.session?.user||null;S.ready=true;updateAccount();mergeCloudFavs();if(S.user)await load()}return S.user}
 function updateAccount(){const b=$("#accountBtn"),m=$("#myRecipesBtn");if(!b)return;b.innerHTML='<b>♙</b>';if(m)m.classList.toggle("show",!!S.user)}
 function auth(mode="login"){
  const o=$("#authOverlay"),b=o.querySelector(".privateBody");
